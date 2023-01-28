@@ -23,7 +23,7 @@
         <module>gmall-ums</module>
         <module>gmall-wms</module>
         <module>gmall-oms</module>
-        <module>gamll-sms</module>
+        <module>gmall-sms</module>
     </modules>
 
     <properties>
