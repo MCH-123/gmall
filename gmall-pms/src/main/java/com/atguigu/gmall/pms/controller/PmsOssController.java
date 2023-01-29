@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -19,8 +20,8 @@ import java.util.Map;
 @RestController
 public class PmsOssController {
 
-    String accessId = "LTAI5tC3MFCR9fMTckgcFBHq"; // 请填写您的AccessKeyId。
-    String accessKey = "COKFg9ApqPQ0vRBdjkTZyzBTfHAUVA"; // 请填写您的AccessKeySecret。
+    String accessId = "LTAI5tMvym7yDRsAw1mW2A6c"; // 请填写您的AccessKeyId。
+    String accessKey = "jlJAQUIIjQ8fOSZ8Ska3KXu6ejcHgM"; // 请填写您的AccessKeySecret。
     String endpoint = "oss-cn-hangzhou.aliyuncs.com"; // 请填写您的 endpoint。
     String bucket = "mch-gmall"; // 请填写您的 bucketname 。
     String host = "https://" + bucket + "." + endpoint; // host的格式为 bucketname.endpoint
@@ -43,7 +44,7 @@ public class PmsOssController {
         policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir);
 
         String postPolicy = client.generatePostPolicy(expiration, policyConds);
-        byte[] binaryData = postPolicy.getBytes("utf-8");
+        byte[] binaryData = postPolicy.getBytes(StandardCharsets.UTF_8);
         String encodedPolicy = BinaryUtil.toBase64String(binaryData);
         String postSignature = client.calculatePostSignature(postPolicy);
 
