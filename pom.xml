@@ -22,9 +22,12 @@
         <module>gmall-pms</module>
         <module>gmall-ums</module>
         <module>gmall-wms</module>
-        <module>gmall-oms</module>
         <module>gmall-sms</module>
+        <module>gmall-oms</module>
+        <module>gmall-search</module>
         <module>gmall-sms-interface</module>
+        <module>gmall-pms-interface</module>
+        <module>gmall-wms-interface</module>
     </modules>
 
     <properties>

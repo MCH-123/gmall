@@ -17,6 +17,14 @@ spring:
   redis:
     host: 192.168.14.111
     port: 6379
+  rabbitmq:
+    host: 192.168.14.111
+    port: 5672
+    virtual-host: /
+    username: root
+    password: 123456
+    publisher-confirm-type: correlated
+    publisher-returns: true
   zipkin:
     base-url: http://192.168.14.111:9411
     discovery-client-enabled: false
@@ -34,3 +42,13 @@ mybatis-plus:
 feign:
   sentinel:
     enabled: true
+logging:
+  level:
+    org.springframework: debug
+seata:
+  tx-service-group: gmall-tx-group
+  service:
+    vgroup-mapping:
+      gmall-tx-group: default
+    grouplist:
+      default: 192.168.14.111:8091

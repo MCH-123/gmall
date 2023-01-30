@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: search-service
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.14.111:8848

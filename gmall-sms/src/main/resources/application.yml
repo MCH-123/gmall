@@ -34,3 +34,10 @@ mybatis-plus:
 feign:
   sentinel:
     enabled: true
+seata:
+  tx-service-group: gmall-tx-group
+  service:
+    vgroup-mapping:
+      gmall-tx-group: default
+    grouplist:
+      default: 192.168.14.111:8091
