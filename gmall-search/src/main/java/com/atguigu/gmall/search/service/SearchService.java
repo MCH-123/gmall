@@ -65,6 +65,7 @@ public class SearchService {
 
     /**
      * 解析搜索结果集
+     *
      * @param response
      * @return
      */
@@ -95,9 +96,9 @@ public class SearchService {
         Map<String, Aggregation> aggregationMap = response.getAggregations().asMap();
         // 1. 解析聚合结果集，获取品牌》
         // {attrId: null, attrName: "品牌"， attrValues: [{id: 1, name: 尚硅谷, logo: http://www.atguigu.com/logo.gif}, {}]}
-        ParsedLongTerms brandIdAgg = (ParsedLongTerms)aggregationMap.get("brandIdAgg");
+        ParsedLongTerms brandIdAgg = (ParsedLongTerms) aggregationMap.get("brandIdAgg");
         List<? extends Terms.Bucket> buckets = brandIdAgg.getBuckets();
-        if (!CollectionUtils.isEmpty(buckets)){
+        if (!CollectionUtils.isEmpty(buckets)) {
             List<BrandEntity> brands = buckets.stream().map(bucket -> { // {id: 1, name: 尚硅谷, logo: http://www.atguigu.com/logo.gif}
                 // 为了得到指定格式的json字符串，创建了一个map
                 BrandEntity brandEntity = new BrandEntity();
@@ -106,12 +107,12 @@ public class SearchService {
                 brandEntity.setId(brandId);
                 // 解析品牌名称的子聚合，获取品牌名称
                 Map<String, Aggregation> brandAggregationMap = ((Terms.Bucket) bucket).getAggregations().asMap();
-                ParsedStringTerms brandNameAgg = (ParsedStringTerms)brandAggregationMap.get("brandNameAgg");
+                ParsedStringTerms brandNameAgg = (ParsedStringTerms) brandAggregationMap.get("brandNameAgg");
                 brandEntity.setName(brandNameAgg.getBuckets().get(0).getKeyAsString());
                 // 解析品牌logo的子聚合，获取品牌 的logo
-                ParsedStringTerms logoAgg = (ParsedStringTerms)brandAggregationMap.get("logoAgg");
+                ParsedStringTerms logoAgg = (ParsedStringTerms) brandAggregationMap.get("logoAgg");
                 List<? extends Terms.Bucket> logoAggBuckets = logoAgg.getBuckets();
-                if (!CollectionUtils.isEmpty(logoAggBuckets)){
+                if (!CollectionUtils.isEmpty(logoAggBuckets)) {
                     brandEntity.setLogo(logoAggBuckets.get(0).getKeyAsString());
                 }
                 // 把map反序列化为json字符串
@@ -121,16 +122,16 @@ public class SearchService {
         }
 
         // 2. 解析聚合结果集，获取分类
-        ParsedLongTerms categoryIdAgg = (ParsedLongTerms)aggregationMap.get("categoryIdAgg");
+        ParsedLongTerms categoryIdAgg = (ParsedLongTerms) aggregationMap.get("categoryIdAgg");
         List<? extends Terms.Bucket> categoryIdAggBuckets = categoryIdAgg.getBuckets();
-        if (!CollectionUtils.isEmpty(categoryIdAggBuckets)){
+        if (!CollectionUtils.isEmpty(categoryIdAggBuckets)) {
             List<CategoryEntity> categories = categoryIdAggBuckets.stream().map(bucket -> { // {id: 225, name: 手机}
                 CategoryEntity categoryEntity = new CategoryEntity();
                 // 获取bucket的key，key就是分类的id
                 Long categoryId = ((Terms.Bucket) bucket).getKeyAsNumber().longValue();
                 categoryEntity.setId(categoryId);
                 // 解析分类名称的子聚合，获取分类名称
-                ParsedStringTerms categoryNameAgg = (ParsedStringTerms)((Terms.Bucket) bucket).getAggregations().get("categoryNameAgg");
+                ParsedStringTerms categoryNameAgg = (ParsedStringTerms) ((Terms.Bucket) bucket).getAggregations().get("categoryNameAgg");
                 categoryEntity.setName(categoryNameAgg.getBuckets().get(0).getKeyAsString());
                 return categoryEntity;
             }).collect(Collectors.toList());
@@ -138,8 +139,8 @@ public class SearchService {
         }
 
         // 3. 解析聚合结果集，获取规格参数
-        ParsedNested attrAgg = (ParsedNested)aggregationMap.get("attrAgg");
-        ParsedLongTerms attrIdAgg = (ParsedLongTerms)attrAgg.getAggregations().get("attrIdAgg");
+        ParsedNested attrAgg = (ParsedNested) aggregationMap.get("attrAgg");
+        ParsedLongTerms attrIdAgg = (ParsedLongTerms) attrAgg.getAggregations().get("attrIdAgg");
         List<? extends Terms.Bucket> attrIdAggBuckets = attrIdAgg.getBuckets();
         if (!CollectionUtils.isEmpty(attrIdAggBuckets)) {
             List<SearchResponseAttrVo> filters = attrIdAggBuckets.stream().map(bucket -> {
@@ -147,12 +148,12 @@ public class SearchService {
                 // 规格参数id
                 responseAttrVo.setAttrId(((Terms.Bucket) bucket).getKeyAsNumber().longValue());
                 // 规格参数的名称
-                ParsedStringTerms attrNameAgg = (ParsedStringTerms)((Terms.Bucket) bucket).getAggregations().get("attrNameAgg");
+                ParsedStringTerms attrNameAgg = (ParsedStringTerms) ((Terms.Bucket) bucket).getAggregations().get("attrNameAgg");
                 responseAttrVo.setAttrName(attrNameAgg.getBuckets().get(0).getKeyAsString());
                 // 规格参数值
-                ParsedStringTerms attrValueAgg = (ParsedStringTerms)((Terms.Bucket) bucket).getAggregations().get("attrValueAgg");
+                ParsedStringTerms attrValueAgg = (ParsedStringTerms) ((Terms.Bucket) bucket).getAggregations().get("attrValueAgg");
                 List<? extends Terms.Bucket> attrValueAggBuckets = attrValueAgg.getBuckets();
-                if (!CollectionUtils.isEmpty(attrValueAggBuckets)){
+                if (!CollectionUtils.isEmpty(attrValueAggBuckets)) {
                     List<String> attrValues = attrValueAggBuckets.stream().map(Terms.Bucket::getKeyAsString).collect(Collectors.toList());
                     responseAttrVo.setAttrValues(attrValues);
                 }
@@ -166,13 +167,14 @@ public class SearchService {
 
     /**
      * 构建查询DSL语句
+     *
      * @return
      */
     private SearchSourceBuilder buildDsl(SearchParamVo paramVo) {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
         String keyword = paramVo.getKeyword();
-        if (StringUtils.isEmpty(keyword)){
+        if (StringUtils.isEmpty(keyword)) {
             // 打广告，TODO
             return null;
         }
@@ -184,7 +186,7 @@ public class SearchService {
         // 1.2. 过滤
         // 1.2.1. 品牌过滤
         List<Long> brandId = paramVo.getBrandId();
-        if (!CollectionUtils.isEmpty(brandId)){
+        if (!CollectionUtils.isEmpty(brandId)) {
             boolQueryBuilder.filter(QueryBuilders.termsQuery("brandId", brandId));
         }
         // 1.2.2. 分类过滤
@@ -196,9 +198,9 @@ public class SearchService {
         // 1.2.3. 价格区间过滤
         Double priceFrom = paramVo.getPriceFrom();
         Double priceTo = paramVo.getPriceTo();
-        if (priceFrom != null || priceTo != null){
+        if (priceFrom != null || priceTo != null) {
             RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("price");
-            if (priceFrom != null){
+            if (priceFrom != null) {
                 rangeQuery.gte(priceFrom);
             }
             if (priceTo != null) {
@@ -215,7 +217,7 @@ public class SearchService {
 
         // 1.2.5. 规格参数的过滤 props=5:高通-麒麟,6:骁龙865-硅谷1000
         List<String> props = paramVo.getProps();
-        if (!CollectionUtils.isEmpty(props)){
+        if (!CollectionUtils.isEmpty(props)) {
             props.forEach(prop -> {
                 String[] attrs = StringUtils.split(prop, ":");
                 if (attrs != null && attrs.length == 2) {
@@ -236,12 +238,27 @@ public class SearchService {
         Integer sort = paramVo.getSort();
         String field = "";
         SortOrder order = null;
-        switch (sort){
-            case 1: field = "price"; order = SortOrder.ASC; break;
-            case 2: field = "price"; order = SortOrder.DESC; break;
-            case 3: field = "createTime"; order = SortOrder.DESC; break;
-            case 4: field = "sales"; order = SortOrder.DESC; break;
-            default: field = "_score"; order = SortOrder.DESC; break;
+        switch (sort) {
+            case 1:
+                field = "price";
+                order = SortOrder.ASC;
+                break;
+            case 2:
+                field = "price";
+                order = SortOrder.DESC;
+                break;
+            case 3:
+                field = "createTime";
+                order = SortOrder.DESC;
+                break;
+            case 4:
+                field = "sales";
+                order = SortOrder.DESC;
+                break;
+            default:
+                field = "_score";
+                order = SortOrder.DESC;
+                break;
         }
         sourceBuilder.sort(field, order);
 
@@ -276,4 +293,5 @@ public class SearchService {
         System.out.println(sourceBuilder.toString());
         return sourceBuilder;
     }
+
 }

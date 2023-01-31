@@ -5,7 +5,6 @@ import com.atguigu.gmall.common.bean.PageResultVo;
 import com.atguigu.gmall.pms.entity.*;
 import com.atguigu.gmall.pms.feign.GmallSmsClient;
 import com.atguigu.gmall.pms.mapper.SkuMapper;
-import com.atguigu.gmall.pms.mapper.SpuDescMapper;
 import com.atguigu.gmall.pms.mapper.SpuMapper;
 import com.atguigu.gmall.pms.service.*;
 import com.atguigu.gmall.pms.vo.SkuVo;
@@ -17,7 +16,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service("spuService")
 public class SpuServiceImpl extends ServiceImpl<SpuMapper, SpuEntity> implements SpuService {
     @Autowired
-    private SpuDescMapper descMapper;
+    private RabbitTemplate rabbitTemplate;
     @Autowired
     private SpuAttrValueService baseService;
     @Autowired
@@ -44,6 +45,15 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, SpuEntity> implements
     private GmallSmsClient gmallSmsClient;
     @Autowired
     private SpuDescService spuDescService;
+
+    private void sendMessage(Long id, String type) {
+        //发送消息
+        try {
+            this.rabbitTemplate.convertAndSend("item_exchange","item."+type,id);
+        } catch (Exception e) {
+            log.error("{}商品消息发送异常,商品id{}",type,id,e);
+        }
+    }
 
     @Override
     public PageResultVo queryPage(PageParamVo paramVo) {
@@ -85,6 +95,7 @@ public class SpuServiceImpl extends ServiceImpl<SpuMapper, SpuEntity> implements
         saveBaseAttr(spuVo, spuId);
         /// 2. 保存sku相关信息
         saveSku(spuVo, spuId);
+        sendMessage(spuVo.getId(),"insert");
     }
 
     private void saveSku(SpuVo spuVo, Long spuId) {

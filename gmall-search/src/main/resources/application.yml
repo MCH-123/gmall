@@ -20,6 +20,18 @@ spring:
   elasticsearch:
     rest:
       uris: http://192.168.14.111:9200
+  rabbitmq:
+    host: 192.168.14.111
+    port: 5672
+    virtual-host: /mch
+    username: mch
+    password: 123456
+    listener:
+      type: simple
+      simple:
+        acknowledge-mode: manual
+        prefetch: 1
+        concurrency: 3
 feign:
   sentinel:
     enabled: true

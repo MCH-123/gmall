@@ -9,6 +9,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.Date;
+import java.util.List;
 
 @Document(indexName = "goods", shards = 3, replicas = 2)
 @Data
@@ -50,5 +51,5 @@ public class Goods {
     private String categoryName;
 
     @Field(type = FieldType.Nested)
-    private List<SearchAttrValueVO> searchAttrs;
+    private List<SearchAttrValueVo> searchAttrs;
 }
