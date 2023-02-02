@@ -41,4 +41,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, CategoryEnt
         return this.categoryMapper.selectList(queryWrapper);
     }
 
+    @Override
+    public List<CategoryEntity> queryCategoriesByPid(Long pid) {
+        LambdaQueryWrapper<CategoryEntity> wrapper = new LambdaQueryWrapper<>();
+        if (pid!=-1) {
+            wrapper.eq(CategoryEntity::getParentId, pid);
+        }
+        return this.list(wrapper);
+
+    }
+
+    @Override
+    public List<CategoryEntity> queryCategoriesWithSub(Long pid) {
+
+        return this.categoryMapper.queryCategoriesByPid(pid);
+    }
+
 }
