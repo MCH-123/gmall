@@ -1,9 +1,11 @@
 package com.atguigu.gmall.index.service;
 
+import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.common.bean.ResponseVo;
 import com.atguigu.gmall.index.config.GmallCache;
 import com.atguigu.gmall.index.feign.GmallPmsFeign;
 import com.atguigu.gmall.pms.entity.CategoryEntity;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,14 +25,14 @@ public class IndexService {
      * 查询一级菜单
      * @return
      */
-    @GmallCache(prefix = KEY_PREFIX,timeout = 14400,random = 3600,lock = LOCK_PREFIX)
-    public List<CategoryEntity> queryLvl1Categories() {
-//        String cacheCategories = this.redisTemplate.opsForValue().get(KEY_PREFIX + 0);
-//        if (StringUtils.isNotBlank(cacheCategories)) {
-//            return JSON.parseArray(cacheCategories, CategoryEntity.class);
-//        }
-        ResponseVo<List<CategoryEntity>> listResponseVo = this.gmallPmsFeign.queryCategoriesByPid(0L);
-//        this.redisTemplate.opsForValue().set(KEY_PREFIX+0,JSON.toJSONString(listResponseVo.getData()),30, TimeUnit.DAYS);
+//    @GmallCache(prefix = KEY_PREFIX,timeout = 14400,random = 3600,lock = LOCK_PREFIX)
+    public List<CategoryEntity> queryLvl1Categories(Long pid) {
+        String cacheCategories = this.redisTemplate.opsForValue().get(KEY_PREFIX + 0);
+        if (StringUtils.isNotBlank(cacheCategories)) {
+            return JSON.parseArray(cacheCategories, CategoryEntity.class);
+        }
+        ResponseVo<List<CategoryEntity>> listResponseVo = this.gmallPmsFeign.queryCategoriesByPid(pid);
+        this.redisTemplate.opsForValue().set(KEY_PREFIX+0,JSON.toJSONString(listResponseVo.getData()));
         return listResponseVo.getData();
     }
 
@@ -39,7 +41,7 @@ public class IndexService {
      * @param pid 一级菜单id
      * @return
      */
-    @GmallCache(prefix = KEY_PREFIX,timeout = 14400,random = 3600,lock = LOCK_PREFIX)
+    @GmallCache(prefix = KEY_PREFIX,timeout = 14400,random = 3600)
     public List<CategoryEntity> queryLvl2CategoriesWithSub(Long pid) {
         //从缓存中获取
 /*        String cacheCategories = this.redisTemplate.opsForValue().get(KEY_PREFIX + pid);

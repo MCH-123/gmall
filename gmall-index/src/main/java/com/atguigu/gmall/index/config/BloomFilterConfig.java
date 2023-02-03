@@ -30,7 +30,6 @@ public class BloomFilterConfig {
 
         ResponseVo<List<CategoryEntity>> listResponseVo = this.pmsClient.queryCategoriesByPid(0L);
         List<CategoryEntity> categoryEntities = listResponseVo.getData();
-        bloomFilter.add(KEY_PREFIX);
         if (!CollectionUtils.isEmpty(categoryEntities)) {
             categoryEntities.forEach(categoryEntity -> bloomFilter.add(KEY_PREFIX + categoryEntity.getId().toString()));
         }

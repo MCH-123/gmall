@@ -18,7 +18,7 @@ public class IndexController {
     private IndexService indexService;
     @GetMapping("/**")
     public String index(Model model) {
-        List<CategoryEntity> categoryEntities = this.indexService.queryLvl1Categories();
+        List<CategoryEntity> categoryEntities = this.indexService.queryLvl1Categories(0L);
         model.addAttribute("categories", categoryEntities);
         //TODO 加载其他数据
         return "index";

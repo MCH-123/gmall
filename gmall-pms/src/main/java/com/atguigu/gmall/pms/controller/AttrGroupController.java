@@ -6,6 +6,7 @@ import com.atguigu.gmall.common.bean.ResponseVo;
 import com.atguigu.gmall.pms.entity.AttrGroupEntity;
 import com.atguigu.gmall.pms.service.AttrGroupService;
 import com.atguigu.gmall.pms.vo.GroupVo;
+import com.atguigu.gmall.pms.vo.ItemGroupVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +42,16 @@ public class AttrGroupController {
     public ResponseVo<List<GroupVo>> queryByCid(@PathVariable Long catId) {
         List<GroupVo> groupVos = this.attrGroupService.queryByCid(catId);
         return ResponseVo.ok(groupVos);
+    }
+
+    @GetMapping("withattrvalues")
+    public ResponseVo<List<ItemGroupVo>> queryGroupsBySpuIdAndCid(
+            @RequestParam Long spuId,
+            @RequestParam Long skuId,
+            @RequestParam Long cid
+    ) {
+        List<ItemGroupVo> itemGroupVos = attrGroupService.queryGroupsBySpuIdAndCid(spuId, skuId, cid);
+        return ResponseVo.ok(itemGroupVos);
     }
     /**
      * 列表

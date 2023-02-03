@@ -33,6 +33,13 @@ public class CategoryController {
             List<CategoryEntity> categoryEntityList = this.categoryService.queryCategory(parentId);
             return ResponseVo.ok(categoryEntityList);
         }*/
+
+    @ApiOperation("根据三级分类id查询一二三分类")
+    @GetMapping("all/{cid3}")
+    public ResponseVo<List<CategoryEntity>> queryCategoriesByCid3(@PathVariable Long cid3) {
+        List<CategoryEntity> itemCategoryVos = this.categoryService.queryCategoriesByCid3(cid3);
+        return ResponseVo.ok(itemCategoryVos);
+    }
     @ApiOperation("根据父id查询分类")
     @GetMapping("parent/{parentId}")
     public ResponseVo<List<CategoryEntity>> queryCategoriesByPid(@PathVariable("parentId") Long pid) {

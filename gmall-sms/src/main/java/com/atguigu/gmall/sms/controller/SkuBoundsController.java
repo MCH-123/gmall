@@ -3,6 +3,7 @@ package com.atguigu.gmall.sms.controller;
 import com.atguigu.gmall.common.bean.PageParamVo;
 import com.atguigu.gmall.common.bean.PageResultVo;
 import com.atguigu.gmall.common.bean.ResponseVo;
+import com.atguigu.gmall.sms.vo.ItemSaleVo;
 import com.atguigu.gmall.sms.entity.SkuBoundsEntity;
 import com.atguigu.gmall.sms.service.SkuBoundsService;
 import com.atguigu.gmall.sms.vo.SkuSaleVo;
@@ -28,6 +29,12 @@ public class SkuBoundsController {
     @Autowired
     private SkuBoundsService skuBoundsService;
 
+    @ApiOperation("查询sku的营销信息")
+    @GetMapping("sku/{skuId}")
+    public ResponseVo<List<ItemSaleVo>> querySalesBySkuId(@PathVariable Long skuId) {
+        List<ItemSaleVo> itemSaleVos = this.skuBoundsService.querySalesBySkuId(skuId);
+        return ResponseVo.ok(itemSaleVos);
+    }
     @ApiOperation("新增sku的营销信息")
     @PostMapping("/skusale/save")
     public ResponseVo<Object> saveSkuSaleInfo(@RequestBody SkuSaleVo skuSaleVo) {
