@@ -18,7 +18,7 @@ public interface GmallPmsApi {
     @GetMapping("pms/spu/{id}")
     ResponseVo<SpuEntity> querySpuById(@PathVariable("id") Long id);
 
-    @GetMapping("pms/sku{id}")
+    @GetMapping("pms/sku/{id}")
     ResponseVo<SkuEntity> querySkuById(@PathVariable("id") Long id);
 
 
@@ -76,7 +76,7 @@ public interface GmallPmsApi {
             @PathVariable("cid")Long cid, @RequestParam("spuId")Long spuId, @RequestParam("skuId")Long skuId
     );
 
-    @GetMapping("withattrvalues")
+    @GetMapping("pms/attrgroup/withattrvalues")
     ResponseVo<List<ItemGroupVo>> queryGroupsBySpuIdAndCid(
             @RequestParam Long spuId,
             @RequestParam Long skuId,

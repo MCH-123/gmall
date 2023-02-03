@@ -31,7 +31,7 @@ public class ItemVo {
     private String subTitle;
     private BigDecimal price;
     private Integer weight;
-    private String defaltImage;
+    private String defaultImage;
 
     // sku图片
     private List<SkuImagesEntity> images;
@@ -52,7 +52,7 @@ public class ItemVo {
     private Map<Long, String> saleAttr;
 
     // sku列表：{'白色,8G,128G': 4, '白色,8G,256G': 5, '白色,8G,512G': 6, '白色,12G,128G': 7}
-    private String skusJson;
+    private String skuJsons;
 
     // spu的海报信息
     private List<String> spuImages;

@@ -20,9 +20,16 @@ spring:
       probability: 1
   redis:
     host: 192.168.14.111
+  thymeleaf:
+    cache: false
 feign:
   sentinel:
     enabled: true
 logging:
   level:
     com.atguigu.gmall: debug
+threadPool:
+  corePoolSize: 100
+  maximumPoolSize: 200
+  keepAliveTime: 60
+  blockingQueueSize: 5000
