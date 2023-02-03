@@ -14,7 +14,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +36,8 @@ public class ItemService {
     private GmallWmsClient wmsClient;
     @Autowired
     private ExecutorService threadPoolExecutor;
-
+    @Autowired
+    TemplateEngine templateEngine;
     public ItemVo load(Long skuId) {
         ItemVo itemVo = new ItemVo();
         //根据skuId查询sku的信息
@@ -144,8 +149,36 @@ public class ItemService {
         CompletableFuture.allOf(cateCompletableFuture, brandCompletableFuture, spuCompletableFuture,
                 skuImageCompletableFuture, saleAttrCompletableFuture, salesCompletableFuture,
                 storeCompletableFuture, skusJsonCompletableFuture, spuImagesCompletableFuture,
-                groupCompletableFuture,saleAttrsCompletableFuture).join();
+                groupCompletableFuture, saleAttrsCompletableFuture).join();
 
         return itemVo;
     }
+
+    /**
+     * 创建页面
+     * @param skuId
+     */
+    private void createHtml(Long skuId) {
+        ItemVo itemVo = this.load(skuId);
+        //上下文对象的初始化
+        Context context = new Context();
+        //数据模型
+        context.setVariable("itemVo", itemVo);
+        //初始化文件流
+
+        try (PrintWriter printWriter = new PrintWriter("E:\\project\\gmall\\gmall-item\\target\\classes\\templates\\" + skuId + ".html")) {
+            templateEngine.process("item", context, printWriter);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 异步生成页面
+     * @param skuId
+     */
+    public void asyncExecute(Long skuId) {
+        threadPoolExecutor.execute(() -> createHtml(skuId));
+    }
+
 }
