@@ -55,3 +55,19 @@ spring:
             lb://item-service
           predicates:
             - Path=/item/**
+        - id: auth-route #单点登录路由
+          uri:
+            lb://auth-service
+          predicates:
+            - Host=sso.gmall.com
+          filters:
+            - Auth=/xxx
+        - id: cart-route #购物车路由
+          uri:
+            lb://cart-service
+          predicates:
+            - Host=cart.gmall.com
+auth:
+  jwt:
+    pubKeyPath: E:\\project\\rsa\\rsa.pub # 公钥地址
+    cookieName: GMALL-TOKEN

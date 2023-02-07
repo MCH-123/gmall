@@ -1,23 +1,16 @@
 package com.atguigu.gmall.ums.controller;
 
-import java.util.List;
-
+import com.atguigu.gmall.common.bean.PageParamVo;
+import com.atguigu.gmall.common.bean.PageResultVo;
+import com.atguigu.gmall.common.bean.ResponseVo;
+import com.atguigu.gmall.ums.entity.UserEntity;
+import com.atguigu.gmall.ums.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.atguigu.gmall.ums.entity.UserEntity;
-import com.atguigu.gmall.ums.service.UserService;
-import com.atguigu.gmall.common.bean.PageResultVo;
-import com.atguigu.gmall.common.bean.ResponseVo;
-import com.atguigu.gmall.common.bean.PageParamVo;
+import java.util.List;
 
 /**
  * 用户表
@@ -33,6 +26,32 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    /**
+     * 校验是否可用
+     * @param data
+     * @param type
+     * @return
+     */
+    @GetMapping("check/{data}/{type}")
+    public ResponseVo<Boolean> checkData(@PathVariable String data, @PathVariable Integer type) {
+        Boolean b = this.userService.checkData(data, type);
+        return ResponseVo.ok(b);
+    }
+
+    @PostMapping("register")
+    public ResponseVo<Object> register(UserEntity userEntity, @RequestParam("code") String code) {
+        this.userService.register(userEntity, code);
+        return ResponseVo.ok(null);
+    }
+    @GetMapping("query")
+    public ResponseVo<UserEntity> queryUser(
+            @RequestParam("loginName")String loginName,
+            @RequestParam("password")String password
+    ){
+        UserEntity userEntity = this.userService.queryUser(loginName, password);
+        return ResponseVo.ok(userEntity);
+    }
 
     /**
      * 列表
