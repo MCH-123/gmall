@@ -93,7 +93,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         }
 
         // 3.对密码加盐加密，并和数据库中的密码进行比较
-        password = DigestUtils.md5Hex(password + userEntity.getSalt());
+        password = DigestUtils.md5Hex(userEntity.getSalt() + DigestUtils.md5Hex(password));
         if (!StringUtils.equals(userEntity.getPassword(), password)){
             throw new UserException("密码输入错误！");
         }

@@ -2,7 +2,7 @@ package com.atguigu.gmall.cart.service;
 
 import com.atguigu.gmall.cart.bean.Cart;
 import com.atguigu.gmall.cart.mapper.CartMapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class cartAsyncService {
 
     @Async
     public void updateCartByUserIdAndSkuId(String userId, Cart cart){
-        cartMapper.update(cart, new UpdateWrapper<Cart>().eq("user_id", userId).eq("sku_id", cart.getSkuId()));
+        cartMapper.update(cart, Wrappers.lambdaQuery(Cart.class).eq(Cart::getUserId,userId).eq(Cart::getSkuId,cart.getSkuId()));
     }
 
     /**
@@ -27,5 +27,16 @@ public class cartAsyncService {
     @Async
     public void saveCart(String userId, Cart cart){
         this.cartMapper.insert(cart);
+    }
+    @Async
+    public void deleteCartByUserId(String userId) {
+        this.cartMapper.delete(Wrappers.lambdaQuery(Cart.class).eq(Cart::getUserId, userId));
+    }
+    @Async
+    public void deleteCartByUserIdAndSkuId(String userId, Long skuId) {
+        this.cartMapper.delete(
+                Wrappers.lambdaQuery(Cart.class)
+                        .eq(Cart::getUserId,userId)
+                        .eq(Cart::getSkuId,skuId));
     }
 }

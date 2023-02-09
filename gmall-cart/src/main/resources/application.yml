@@ -22,20 +22,22 @@ spring:
     discovery-client-enabled: false
     sender:
       type: web
+  rabbitmq:
+    host: 192.168.14.111
+    port: 5672
+    virtual-host: /mch
+    username: mch
+    password: 123456
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 1
+        concurrency: 6
   sleuth:
     sampler:
       probability: 1
   thymeleaf:
     cache: false
-feign:
-  sentinel:
-    enabled: true
-auth:
-  jwt:
-    pubKeyPath: E:\\project-1010\\rsa\\rsa.pub
-    cookieName: GMALL-TOKEN
-    userKey: userKey
-    expireTime: 15552000 # userKey的过期时间
   task:
     # Spring 执行器配置，对应 TaskExecutionProperties 配置类。对于 Spring 异步任务，会使用该执行器。
     execution:
@@ -49,3 +51,12 @@ auth:
       shutdown:
         await-termination: true # 应用关闭时，是否等待定时任务执行完成。默认为 false ，建议设置为 true
         await-termination-period: 60 # 等待任务完成的最大时长，单位为秒。默认为 0 ，根据自己应用来设置
+feign:
+  sentinel:
+    enabled: true
+auth:
+  jwt:
+    pubKeyPath: E:\\project\\rsa\\rsa.pub
+    cookieName: GMALL-TOKEN
+    userKey: userKey
+    expireTime: 15552000 # userKey的过期时间

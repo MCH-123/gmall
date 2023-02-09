@@ -26,6 +26,7 @@ public class GmallCacheAspect {
     private RedissonClient redissonClient;
     @Autowired
     private RBloomFilter bloomFilter;
+
     @Around("@annotation(com.atguigu.gmall.index.config.GmallCache)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         //获取切点方法的签名
@@ -38,7 +39,7 @@ public class GmallCacheAspect {
         String prefix = annotation.prefix();
         //获取方法的参数
         Object[] args = joinPoint.getArgs();
-        String param = StringUtils.join(args,",");
+        String param = StringUtils.join(args, ",");
         //获取方法的返回值类型
         Class<?> returnType = method.getReturnType();
         String key = prefix + param;
@@ -48,28 +49,30 @@ public class GmallCacheAspect {
         if (StringUtils.isNotBlank(json)) {
             return JSON.parseObject(json, returnType);
         }
+        //添加布隆过滤器
+        if (!bloomFilter.contains(key)) {
+            return null;
+        }
         //不存在 加锁
         String lock = annotation.lock();
         RLock rLock = this.redissonClient.getLock(lock + param);
         rLock.lock();
-        //
-        if (!bloomFilter.contains(key)) {
-            return null;
-        }
 
-        String json2 = this.redisTemplate.opsForValue().get(key);
-        if (StringUtils.isNotBlank(json2)) {
-
+        try {
+            String json2 = this.redisTemplate.opsForValue().get(key);
+            if (StringUtils.isNotBlank(json2)) {
+                rLock.unlock();
+                return JSON.parseObject(json2, returnType);
+            }
+            //执行方法目标
+            Object result = joinPoint.proceed(joinPoint.getArgs());
+            //放入缓存 释放分布锁
+            int timeout = annotation.timeout();
+            int random = annotation.random();
+            this.redisTemplate.opsForValue().set(prefix + param, JSON.toJSONString(result), timeout + new Random().nextInt(random), TimeUnit.MINUTES);
+            return result;
+        } finally {
             rLock.unlock();
-            return JSON.parseObject(json2, returnType);
         }
-        //执行方法目标
-        Object result = joinPoint.proceed(joinPoint.getArgs());
-        //放入缓存 释放分布锁
-        int timeout = annotation.timeout();
-        int random = annotation.random();
-        this.redisTemplate.opsForValue().set(prefix+param,JSON.toJSONString(result),timeout+new Random().nextInt(random), TimeUnit.MINUTES);
-        rLock.unlock();
-        return result;
     }
 }

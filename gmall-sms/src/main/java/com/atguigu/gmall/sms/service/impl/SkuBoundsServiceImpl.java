@@ -73,24 +73,32 @@ public class SkuBoundsServiceImpl extends ServiceImpl<SkuBoundsMapper, SkuBounds
                 Wrappers.lambdaQuery(SkuBoundsEntity.class)
                         .eq(SkuBoundsEntity::getSkuId, skuId)
         );
+        if (skuBoundsEntity != null) {
+
         ItemSaleVo bounds = new ItemSaleVo();
         bounds.setType("积分");
         bounds.setDesc("送" + skuBoundsEntity.getGrowBounds() + "成长积分，送" + skuBoundsEntity.getBuyBounds() + "购物积分");
         itemSaleVos.add(bounds);
+        }
         //查询满减信息
         SkuFullReductionEntity reductionEntity = this.skuFullReductionMapper.selectOne(Wrappers.lambdaQuery(SkuFullReductionEntity.class)
                 .eq(SkuFullReductionEntity::getSkuId, skuId));
-        ItemSaleVo reduction = new ItemSaleVo();
-        reduction.setType("满减");
-        reduction.setDesc("满" + reductionEntity.getFullPrice() + "减" + reductionEntity.getReducePrice());
-        itemSaleVos.add(reduction);
+        if (reductionEntity != null) {
+            ItemSaleVo reduction = new ItemSaleVo();
+            reduction.setType("满减");
+            reduction.setDesc("满" + reductionEntity.getFullPrice() + "减" + reductionEntity.getReducePrice());
+            itemSaleVos.add(reduction);
+        }
         //查询打折信息
         SkuLadderEntity ladderEntity = this.skuLadderMapper.selectOne(Wrappers.lambdaQuery(SkuLadderEntity.class)
                 .eq(SkuLadderEntity::getSkuId, skuId));
-        ItemSaleVo ladder = new ItemSaleVo();
-        ladder.setType("打折");
-        ladder.setDesc("满" + ladderEntity.getFullCount() + "件打" + ladderEntity.getDiscount().divide(new BigDecimal(10)) + "折");
-        itemSaleVos.add(ladder);
+        if (ladderEntity != null) {
+
+            ItemSaleVo ladder = new ItemSaleVo();
+            ladder.setType("打折");
+            ladder.setDesc("满" + ladderEntity.getFullCount() + "件打" + ladderEntity.getDiscount().divide(new BigDecimal(10)) + "折");
+            itemSaleVos.add(ladder);
+        }
         return itemSaleVos;
     }
 

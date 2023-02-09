@@ -1,4 +1,4 @@
-package com.atguigu.gmall.cart.bean;
+package com.atguigu.gmall.scheduled.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
