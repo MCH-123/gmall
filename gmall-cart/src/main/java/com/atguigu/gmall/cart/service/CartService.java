@@ -126,7 +126,7 @@ public class CartService {
         BoundHashOperations<String, Object, Object> hashOps = this.redisTemplate.boundHashOps(unloginKey);
         // 获取未登录购物车的json集合
         List<Object> cartJsons = hashOps.values();
-        List<Cart> unloginCarts = null;
+        List<Cart> unloginCarts;
         // 反序列化为cart集合
         unloginCarts = this.getCarts(cartJsons);
         // 2. 判断是否登录，未登录直接返回
@@ -215,5 +215,16 @@ public class CartService {
             this.cartAsyncService.deleteCartByUserIdAndSkuId(userId, skuId);
             hashOps.delete(skuId.toString());
         }
+    }
+
+    public List<Cart> queryCheckedCarts(Long userId) {
+        String key = KEY_PREFIX + userId;
+        BoundHashOperations<String, Object, Object> hashOps = this.redisTemplate.boundHashOps(key);
+        List<Object> cartJsons = hashOps.values();
+        if (CollectionUtils.isEmpty(cartJsons)) {
+            return null;
+        }
+        return cartJsons.stream().map(cartJson->JSON.parseObject(cartJson.toString(),Cart.class))
+                .filter(Cart::getCheck).collect(Collectors.toList());
     }
 }

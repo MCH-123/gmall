@@ -19,6 +19,18 @@ public class CartController {
     private CartService cartService;
 
     /**
+     * 根据用户id获取购物车选中状态
+     * @param userId
+     * @return
+     */
+    @GetMapping("check/{userId}")
+    @ResponseBody
+    public ResponseVo<List<Cart>> queryCheckedCarts(@PathVariable Long userId) {
+        List<Cart> carts = this.cartService.queryCheckedCarts(userId);
+        return ResponseVo.ok(carts);
+    }
+
+    /**
      * 添加购物车 重定向到购物车成功页
      * @param cart
      * @return

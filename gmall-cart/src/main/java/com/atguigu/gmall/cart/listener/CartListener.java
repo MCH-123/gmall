@@ -42,25 +42,27 @@ public class CartListener {
             key = {"cart.delete"}
     ))
     public void deleteCart(Map<String,Object> msg, Channel channel, Message message) throws IOException {
-        if (CollectionUtils.isEmpty(msg)) {
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
-            return;
-        }
-        //获取消息中的userId和skuIds
-        Long userId = Long.valueOf(msg.get("userId").toString());
-        List<String> skuIds = JSON.parseArray(msg.get("skuIds").toString(), String.class);
-        if (skuIds == null || CollectionUtils.isEmpty(skuIds)) {
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
-            return;
-        }
+        try {
+            //获取消息中的userId和skuIds
+            Long userId = Long.valueOf(msg.get("userId").toString());
+            List<String> skuIds = JSON.parseArray(msg.get("skuIds").toString(), String.class);
 
-        //删除购物车中对应的记录
-        BoundHashOperations<String, Object, Object> hashOps = this.redisTemplate.boundHashOps(KEY_PREFIX + userId);
-        hashOps.delete(skuIds);
-        this.cartMapper.delete(Wrappers.lambdaQuery(Cart.class)
-                .eq(Cart::getUserId, userId)
-                .in(Cart::getSkuId, skuIds));
-        channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+            //删除购物车中对应的记录
+            BoundHashOperations<String, Object, Object> hashOps = this.redisTemplate.boundHashOps(KEY_PREFIX + userId);
+            hashOps.delete(skuIds);
+            this.cartMapper.delete(Wrappers.lambdaQuery(Cart.class)
+                    .eq(Cart::getUserId, userId)
+                    .in(Cart::getSkuId, skuIds));
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (message.getMessageProperties().getRedelivered()) {
+
+                channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
+            } else {
+                channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,true);
+            }
+        }
     }
 
     @RabbitListener(bindings = @QueueBinding(

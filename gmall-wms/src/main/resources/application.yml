@@ -17,6 +17,19 @@ spring:
   redis:
     host: 192.168.14.111
     port: 6379
+  rabbitmq:
+    host: 192.168.14.111
+    port: 5672
+    virtual-host: /mch
+    username: mch
+    password: 123456
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 1
+        concurrency: 6
+    publisher-confirm-type: correlated
+    publisher-returns: true
   zipkin:
     base-url: http://192.168.14.111:9411
     discovery-client-enabled: false
