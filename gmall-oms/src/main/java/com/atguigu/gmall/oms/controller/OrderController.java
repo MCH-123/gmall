@@ -6,6 +6,7 @@ import com.atguigu.gmall.common.bean.ResponseVo;
 import com.atguigu.gmall.oms.entity.OrderEntity;
 import com.atguigu.gmall.oms.entity.OrderSubmitVo;
 import com.atguigu.gmall.oms.service.OrderService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,14 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @ApiOperation("根据订单编号查询订单")
+    @GetMapping("token/{orderSn}")
+    public ResponseVo<OrderEntity> queryOrderByOrderSn(@PathVariable String orderSn) {
+        OrderEntity orderEntity = this.orderService.getOne(Wrappers.lambdaQuery(OrderEntity.class)
+                .eq(OrderEntity::getOrderSn, orderSn));
+        return ResponseVo.ok(orderEntity);
+    }
 
 
     @ApiOperation("保存订单")
