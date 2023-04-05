@@ -18,7 +18,7 @@ public class RabbitMqConfig {
     public Queue ttlQueue(){
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("x-message-ttl", 90000);
-        arguments.put("x-dead-letter-exchange", "ORDER-EXCHANGE");
+        arguments.put("x-dead-letter-exchange", "ORDER.EXCHANGE");
         arguments.put("x-dead-letter-routing-key", "stock.unlock");
         return new Queue("stock-ttl-queue", true, false, false, arguments);
     }
@@ -27,7 +27,7 @@ public class RabbitMqConfig {
     @Bean
     public Binding ttlBinding(){
 
-        return new Binding("stock-ttl-queue", Binding.DestinationType.QUEUE, "ORDER-EXCHANGE", "stock.ttl", null);
+        return new Binding("stock-ttl-queue", Binding.DestinationType.QUEUE, "ORDER.EXCHANGE", "stock.ttl", null);
     }
 
     // 声明死信交换机：借用order-exchange

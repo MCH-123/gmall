@@ -65,8 +65,9 @@
 									</div>
 								</li>
 								<li class="yui3-u-1-8">
-									<span class="price">{{cart.price}}</span>
-									<span class="price">{{cart.currentPrice}}</span>
+									<span class="price" v-if="cart.currentPrice>cart.price">{{cart.currentPrice}}</span>
+									<span class="price" v-else>{{cart.price}}</span>
+									<span class="price" style="color: red" v-if="cart.price>cart.currentPrice">{{cart.currentPrice}}</span>
 								</li>
 								<li class="yui3-u-1-8">
 									<a href="javascript:void(0)" @click="decr(cart)" class="increment mins">-</a>

@@ -64,8 +64,8 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuMapper, WareSkuEntity
         //锁定库存信息保存到redis
         String orderToken = lockVos.get(0).getOrderToken();
         this.redisTemplate.opsForValue().set(KEY_PREFIX + orderToken, JSON.toJSONString(lockVos));
-        //发送消息到延时队列 定时关单
-        this.rabbitTemplate.convertAndSend("ORDER-EXCHANGE","stock.ttl",orderToken);
+        //发送消息到延时队列 定时解锁库存
+        this.rabbitTemplate.convertAndSend("ORDER.EXCHANGE","stock.ttl",orderToken);
         return null;//全部锁定成功
     }
 

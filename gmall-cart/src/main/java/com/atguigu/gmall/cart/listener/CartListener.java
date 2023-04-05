@@ -49,7 +49,7 @@ public class CartListener {
 
             //删除购物车中对应的记录
             BoundHashOperations<String, Object, Object> hashOps = this.redisTemplate.boundHashOps(KEY_PREFIX + userId);
-            hashOps.delete(skuIds);
+            hashOps.delete(skuIds.toArray());
             this.cartMapper.delete(Wrappers.lambdaQuery(Cart.class)
                     .eq(Cart::getUserId, userId)
                     .in(Cart::getSkuId, skuIds));

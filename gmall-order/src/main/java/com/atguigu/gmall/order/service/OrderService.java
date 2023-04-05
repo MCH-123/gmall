@@ -207,14 +207,14 @@ public class OrderService {
         } catch (Exception e) {
             e.printStackTrace();
             //订单创建失败 立马释放库存
-            this.rabbitTemplate.convertAndSend("ORDER-EXCHANGE", "stock.unlock", orderToken);
+            this.rabbitTemplate.convertAndSend("ORDER.EXCHANGE", "stock.unlock", orderToken);
         }
         //5.删除购物车 异步发送消息给购物车 删除购物车项
         HashMap<String, Object> map = new HashMap<>();
         map.put("userId", userId);
         List<Long> skuIds = items.stream().map(OrderItemVo::getSkuId).collect(Collectors.toList());
         map.put("skuIds", JSON.toJSONString(skuIds));
-        this.rabbitTemplate.convertAndSend("ORDER-EXCHANGE","cart.delete",map);
+        this.rabbitTemplate.convertAndSend("ORDER.EXCHANGE","cart.delete",map);
         return orderEntity;
     }
 }

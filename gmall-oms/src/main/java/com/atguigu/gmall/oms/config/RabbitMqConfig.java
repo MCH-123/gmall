@@ -17,8 +17,8 @@ public class RabbitMqConfig {
     @Bean
     public Queue ttlQueue(){
         Map<String, Object> arguments = new HashMap<>();
-        arguments.put("x-message-ttl", 60000);
-        arguments.put("x-dead-letter-exchange", "ORDER-EXCHANGE");
+        arguments.put("x-message-ttl", 21600000);
+        arguments.put("x-dead-letter-exchange", "ORDER.EXCHANGE");
         arguments.put("x-dead-letter-routing-key", "order.dead");
         return new Queue("order-ttl-queue", true, false, false, arguments);
     }
@@ -27,7 +27,7 @@ public class RabbitMqConfig {
     @Bean
     public Binding ttlBinding(){
 
-        return new Binding("order-ttl-queue", Binding.DestinationType.QUEUE, "ORDER-EXCHANGE", "order.create", null);
+        return new Binding("order-ttl-queue", Binding.DestinationType.QUEUE, "ORDER.EXCHANGE", "order.create", null);
     }
 
     // 声明死信交换机：order-exchange
@@ -41,6 +41,6 @@ public class RabbitMqConfig {
     // 把死信队列绑定到死信交换机
     @Bean
     public Binding binding(){
-        return new Binding("order-dead-queue", Binding.DestinationType.QUEUE, "ORDER-EXCHANGE", "order.dead", null);
+        return new Binding("order-dead-queue", Binding.DestinationType.QUEUE, "ORDER.EXCHANGE", "order.dead", null);
     }
 }

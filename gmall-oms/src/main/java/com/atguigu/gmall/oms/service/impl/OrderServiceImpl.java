@@ -47,6 +47,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderEntity> impl
         orderEntity.setUserId(userId);
         orderEntity.setCreateTime(new Date());
         orderEntity.setTotalAmount(orderSubmitVo.getTotalPrice());
+        orderEntity.setPayAmount(orderSubmitVo.getTotalPrice());
         orderEntity.setPayType(orderSubmitVo.getPayType());
         orderEntity.setStatus(0);
         orderEntity.setDeliveryCompany(orderSubmitVo.getDeliveryCompany());
@@ -67,7 +68,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderEntity> impl
             this.orderItemMapper.insert(itemEntity);
         }
         //发送延时消息 定时关单
-        this.rabbitTemplate.convertAndSend("ORDER-EXCHANGE","order.create",orderSubmitVo.getOrderToken());
+        this.rabbitTemplate.convertAndSend("ORDER.EXCHANGE","order.create",orderSubmitVo.getOrderToken());
         return orderEntity;
     }
 

@@ -3,6 +3,7 @@ package com.atguigu.gmall.wms.mapper;
 import com.atguigu.gmall.wms.entity.WareSkuEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface WareSkuMapper extends BaseMapper<WareSkuEntity> {
     int lockStock(Long id, Integer count);
 
     int unlockStock(Long wareSkuId, Integer count);
+
+    void minus(@Param("id") Long wareSkuId, @Param("count") Integer count);
 }
